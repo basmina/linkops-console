@@ -1,5 +1,5 @@
 module.exports = {
-  displayName: 'links',
+  displayName: 'data-access-links',
   preset: '../../../jest.preset.js',
   testEnvironment: 'node',
   transform: {
