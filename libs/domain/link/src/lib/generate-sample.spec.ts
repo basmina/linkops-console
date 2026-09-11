@@ -54,4 +54,15 @@ describe('generateSample', () => {
     const second = generateSample(link, first);
     expect(Math.abs(second.snrDb - first.snrDb)).toBeLessThan(15);
   });
+
+  it('is fully deterministic when given a fixed clock and RNG', () => {
+    const now = new Date('2026-01-01T00:00:05.000Z');
+    const options = { now, random: () => 0.5 };
+
+    const first = generateSample(link, undefined, options);
+    const second = generateSample(link, undefined, options);
+
+    expect(first).toEqual(second);
+    expect(first.ts).toBe(now.toISOString());
+  });
 });

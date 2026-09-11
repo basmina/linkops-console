@@ -86,7 +86,7 @@ export class TelemetrySimulatorService
     for (const link of links) {
       const previousSample = this.latest.get(link.id);
 
-      const sample = generateSample(link, previousSample);
+      const sample = generateSample(link, previousSample, { now });
 
       this.latest.set(link.id, sample);
 
