@@ -1,0 +1,164 @@
+<div class="detail-page">
+  <header class="page-header">
+    <button type="button" class="back-button" routerLink="/">
+      ← Back to Fleet
+    </button>
+
+    @if (link(); as currentLink) {
+      <div class="header-row">
+        <div>
+          <h1>{{ currentLink.name }}</h1>
+          <p>
+            {{ currentLink.siteA }}
+            →
+            {{ currentLink.siteB }}
+          </p>
+        </div>
+
+        <span
+          class="status"
+          [class.up]="currentLink.status === 'up'"
+          [class.degraded]="currentLink.status === 'degraded'"
+          [class.down]="currentLink.status === 'down'"
+        >
+          ● {{ currentLink.status | titlecase }}
+        </span>
+      </div>
+    }
+  </header>
+
+  @if (loading()) {
+    <div class="card">Loading link...</div>
+  }
+
+  @if (error()) {
+    <div class="error-card">
+      {{ error() }}
+    </div>
+  }
+
+  @if (link(); as currentLink) {
+    <section class="telemetry-grid">
+      <div class="metric-card">
+        <span>Throughput</span>
+        <strong>
+          {{ latest()?.throughputMbps ?? 0 | number: '1.0-1' }}
+          Mbps
+        </strong>
+      </div>
+
+      <div class="metric-card">
+        <span>RSSI</span>
+        <strong>
+          {{ latest()?.rssiDbm ?? 0 | number: '1.0-1' }}
+          dBm
+        </strong>
+      </div>
+
+      <div class="metric-card">
+        <span>SNR</span>
+        <strong>
+          {{ latest()?.snrDb ?? 0 | number: '1.0-1' }}
+          dB
+        </strong>
+      </div>
+
+      <div class="metric-card">
+        <span>Capacity</span>
+        <strong> {{ currentLink.capacityMbps }} Mbps </strong>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="section-header">
+        <div>
+          <h2>Live Throughput</h2>
+          <p>Last 60 telemetry samples</p>
+        </div>
+
+        <span class="live"> ● LIVE </span>
+      </div>
+
+      <div class="chart">
+        @if (sparklinePoints()) {
+          <svg viewBox="0 0 400 100" preserveAspectRatio="none">
+            <polyline
+              [attr.points]="sparklinePoints()"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            />
+          </svg>
+        } @else {
+          <div class="empty-chart">Waiting for telemetry...</div>
+        }
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Link Configuration</h2>
+
+      @if (hasConflict()) {
+        <div class="conflict-card">
+          <p>
+            This link was modified by someone else. Reload it to get the latest
+            version, then try your changes again.
+          </p>
+
+          <button type="button" class="reload-button" (click)="reloadLink()">
+            Reload Latest Version
+          </button>
+        </div>
+      }
+
+      <app-link-form
+        submitLabel="Save Changes"
+        [value]="currentLink"
+        [pending]="saving()"
+        [errorMessage]="saveError()"
+        (formSubmit)="save($event)"
+        (formCancel)="cancelEdit()"
+      >
+        <button
+          type="button"
+          formActions
+          class="delete-button"
+          [disabled]="hasConflict()"
+          [title]="
+            hasConflict()
+              ? 'Resolve the version conflict above before deleting this link.'
+              : ''
+          "
+          (click)="delete()"
+        >
+          Delete Link
+        </button>
+      </app-link-form>
+
+      @if (saved()) {
+        <span class="success"> Saved successfully </span>
+      }
+    </section>
+
+    <section class="card metadata">
+      <div>
+        <span>Version</span>
+        <strong>{{ currentLink.version }}</strong>
+      </div>
+
+      <div>
+        <span>Created</span>
+        <strong>
+          {{ currentLink.createdAt | date: 'medium' }}
+        </strong>
+      </div>
+
+      <div>
+        <span>Updated</span>
+        <strong>
+          {{ currentLink.updatedAt | date: 'medium' }}
+        </strong>
+      </div>
+    </section>
+  }
+</div>
