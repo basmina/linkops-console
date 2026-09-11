@@ -1,0 +1,199 @@
+<div class="fleet-page">
+  <header class="page-header">
+    <div>
+      <h1>LinkOps Console</h1>
+      <p>Live network link fleet</p>
+    </div>
+
+    <div class="header-actions">
+      <a class="new-link-button" routerLink="/links/new">+ New Link</a>
+
+      <div class="live-indicator">
+        <span class="live-dot"></span>
+        LIVE
+      </div>
+    </div>
+  </header>
+
+  @if (loadError()) {
+    <div class="error-card">
+      <span>{{ loadError() }}</span>
+
+      <button type="button" class="retry-button" (click)="loadFleet()">
+        Retry
+      </button>
+    </div>
+  }
+
+  @if (streamError()) {
+    <div class="error-card warning">
+      {{ streamError() }}
+    </div>
+  }
+
+  <!-- KPI CARDS -->
+
+  <section class="kpi-grid">
+    <article class="kpi-card">
+      <span class="kpi-label"> Total Links </span>
+
+      <strong>
+        {{ store.liveStatusCounts().total }}
+      </strong>
+    </article>
+
+    <article class="kpi-card up">
+      <span class="kpi-label"> Up </span>
+
+      <strong>
+        {{ store.liveStatusCounts().up || 0 }}
+      </strong>
+    </article>
+
+    <article class="kpi-card degraded">
+      <span class="kpi-label"> Degraded </span>
+
+      <strong>
+        {{ store.liveStatusCounts().degraded || 0 }}
+      </strong>
+    </article>
+
+    <article class="kpi-card down">
+      <span class="kpi-label"> Down </span>
+
+      <strong>
+        {{ store.liveStatusCounts().down || 0 }}
+      </strong>
+    </article>
+  </section>
+
+  <!-- FLEET SUMMARY -->
+
+  @if (store.summary(); as summary) {
+    <section class="summary-bar">
+      <div>
+        <span>Average throughput</span>
+        <strong>
+          {{ store.summary()?.avgThroughputMbps | number: '1.0-1' }}
+          Mbps
+        </strong>
+      </div>
+
+      <div>
+        <span>Worst link</span>
+        <strong>
+          {{ summary.worstLinkId || 'None' }}
+        </strong>
+      </div>
+    </section>
+  }
+
+  <!-- FILTERS -->
+
+  <section class="toolbar">
+    <input
+      type="search"
+      placeholder="Search links or sites..."
+      [ngModel]="store.search()"
+      (ngModelChange)="onSearch($event)"
+    />
+
+    <select
+      [ngModel]="store.statusFilter()"
+      (ngModelChange)="onStatusChange($event)"
+    >
+      @for (status of statuses; track status) {
+        <option [value]="status">
+          {{ status | titlecase }}
+        </option>
+      }
+    </select>
+  </section>
+
+  <!-- TABLE -->
+
+  <section class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th>
+            <button type="button" (click)="sort('name')">Link</button>
+          </th>
+
+          <th>Site A</th>
+
+          <th>Site B</th>
+
+          <th>Band</th>
+
+          <th>
+            <button type="button" (click)="sort('status')">Status</button>
+          </th>
+
+          <th>
+            <button type="button" (click)="sort('capacity')">Capacity</button>
+          </th>
+
+          <th>Throughput</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        @for (link of store.filteredLinks(); track link.id) {
+          <tr>
+            <td>
+              <a [routerLink]="['/links', link.id]">
+                {{ link.name }}
+              </a>
+            </td>
+
+            <td>
+              {{ link.siteA }}
+            </td>
+
+            <td>
+              {{ link.siteB }}
+            </td>
+
+            <td>
+              {{ link.band }}
+            </td>
+
+            <td>
+              <span
+                class="status"
+                [class.status-up]="link.status === 'up'"
+                [class.status-degraded]="link.status === 'degraded'"
+                [class.status-down]="link.status === 'down'"
+              >
+                <span class="status-dot"></span>
+
+                {{ link.status | titlecase }}
+              </span>
+            </td>
+
+            <td>
+              {{ link.capacityMbps }}
+              Mbps
+            </td>
+
+            <td>
+              @if (store.latestTelemetry()[link.id]; as telemetry) {
+                {{ telemetry.throughputMbps }}
+                Mbps
+              } @else {
+                —
+              }
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="7" class="empty">
+              No links match the current filters.
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </section>
+</div>
