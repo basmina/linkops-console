@@ -1,5 +1,5 @@
 {
-  "name": "@linkops-console/links",
+  "name": "@linkops-console/data-access-links",
   "version": "0.0.1",
   "private": true,
   "type": "commonjs",

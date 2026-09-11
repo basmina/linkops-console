@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { LINK_REPOSITORY } from '@linkops-console/link';
-import { InMemoryLinkRepository } from '@linkops-console/links';
+import { InMemoryLinkRepository } from '@linkops-console/data-access-links';
 import { LinkSeedService } from './link-seed.service';
 import { TelemetrySimulatorService } from './telemetry-simulator.service';
 import { LinksController } from './links.controller';

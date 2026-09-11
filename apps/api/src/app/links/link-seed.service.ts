@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { LINK_REPOSITORY, LinkRepository } from '@linkops-console/link';
-import { seedLinks } from '@linkops-console/links';
+import { seedLinks } from '@linkops-console/data-access-links';
 
 @Injectable()
 export class LinkSeedService {

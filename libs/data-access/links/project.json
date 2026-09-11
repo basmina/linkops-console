@@ -1,5 +1,5 @@
 {
-  "name": "links",
+  "name": "data-access-links",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/data-access/links/src",
   "projectType": "library",

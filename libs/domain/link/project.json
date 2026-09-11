@@ -3,7 +3,14 @@
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/domain/link/src",
   "projectType": "library",
-  "tags": [],
-  "// targets": "to see all targets run: nx show project link --web",
-  "targets": {}
+  "tags": ["type:domain", "scope:shared"],
+  "targets": {
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/domain/link/jest.config.cts"
+      }
+    }
+  }
 }
