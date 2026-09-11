@@ -1,0 +1,97 @@
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <div class="form-grid">
+    <label>
+      Name
+      <input type="text" formControlName="name" />
+
+      @if (form.controls.name.touched && form.controls.name.invalid) {
+        <small> Name must be between 3 and 40 characters. </small>
+      }
+    </label>
+
+    <label>
+      Site A
+      <input type="text" formControlName="siteA" />
+
+      @if (form.controls.siteA.touched && form.controls.siteA.invalid) {
+        <small> Site A is required. </small>
+      }
+    </label>
+
+    <label>
+      Site B
+      <input type="text" formControlName="siteB" />
+
+      @if (form.controls.siteB.touched && form.controls.siteB.invalid) {
+        <small> Site B is required. </small>
+      }
+    </label>
+
+    <label>
+      Band
+      <select formControlName="band">
+        @for (band of bands; track band) {
+          <option [value]="band">{{ band }}</option>
+        }
+      </select>
+    </label>
+
+    <label>
+      Mode
+      <select formControlName="mode">
+        @for (mode of modes; track mode) {
+          <option [value]="mode">{{ mode }}</option>
+        }
+      </select>
+    </label>
+
+    <label>
+      Capacity (Mbps)
+      <input type="number" formControlName="capacityMbps" />
+
+      @if (
+        form.controls.capacityMbps.touched && form.controls.capacityMbps.invalid
+      ) {
+        <small> Capacity must be between 10 and 1000 Mbps. </small>
+      }
+    </label>
+
+    <label>
+      Tx Power (dBm)
+      <input type="number" formControlName="txPowerDbm" />
+
+      @if (
+        form.controls.txPowerDbm.touched && form.controls.txPowerDbm.invalid
+      ) {
+        <small> Tx Power must be between -10 and 30 dBm. </small>
+      }
+    </label>
+
+    <label>
+      Channel Width
+      <select formControlName="channelWidthMhz">
+        @for (width of channelWidths; track width) {
+          <option [ngValue]="width">{{ width }} MHz</option>
+        }
+      </select>
+    </label>
+  </div>
+
+  @if (errorMessage()) {
+    <div class="error-card">
+      {{ errorMessage() }}
+    </div>
+  }
+
+  <div class="actions">
+    <button type="submit" [disabled]="pending()">
+      {{ pending() ? 'Working…' : submitLabel() }}
+    </button>
+
+    <button type="button" class="secondary" (click)="formCancel.emit()">
+      Cancel
+    </button>
+
+    <ng-content select="[formActions]" />
+  </div>
+</form>

@@ -1,0 +1,20 @@
+<div class="create-page">
+  <header class="page-header">
+    <button type="button" class="back-button" routerLink="/">
+      ← Back to Fleet
+    </button>
+
+    <h1>New Link</h1>
+    <p>Create a point-to-point radio link.</p>
+  </header>
+
+  <section class="card">
+    <app-link-form
+      submitLabel="Create Link"
+      [pending]="saving()"
+      [errorMessage]="error()"
+      (formSubmit)="create($event)"
+      (formCancel)="cancel()"
+    />
+  </section>
+</div>
