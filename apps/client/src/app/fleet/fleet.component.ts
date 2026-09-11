@@ -11,7 +11,7 @@ import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterModule } from '@angular/router';
 
-import { forkJoin } from 'rxjs';
+import { catchError, forkJoin, of } from 'rxjs';
 
 import { LinkStatus } from '@linkops-console/link';
 
@@ -57,20 +57,42 @@ export class FleetComponent implements OnInit {
     this.loadError.set('');
 
     forkJoin({
-      links: this.api.getLinks(),
-      summary: this.api.getSummary(),
-    }).subscribe({
-      next: ({ links, summary }) => {
-        this.store.setLinks(links);
-        this.store.setSummary(summary);
-      },
-      error: (error: unknown) => {
-        console.error('Failed to load fleet data', error);
-        this.loadError.set(
-          'Unable to load the fleet. Check your connection and try again.',
-        );
-      },
-    });
+      links: this.api.getLinks().pipe(
+        catchError((error: unknown) => {
+          console.error('Failed to load links', error);
+          return of(null);
+        }),
+      ),
+      summary: this.api.getSummary().pipe(
+        catchError((error: unknown) => {
+          console.error('Failed to load fleet summary', error);
+          return of(null);
+        }),
+      ),
+    })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(({ links, summary }) => {
+        if (links === null && summary === null) {
+          this.loadError.set(
+            'Unable to load the fleet. Check your connection and try again.',
+          );
+          return;
+        }
+
+        if (links === null || summary === null) {
+          this.loadError.set(
+            'Some fleet data failed to load. Refresh to try again.',
+          );
+        }
+
+        if (links !== null) {
+          this.store.setLinks(links);
+        }
+
+        if (summary !== null) {
+          this.store.setSummary(summary);
+        }
+      });
   }
 
   connectStream(): void {
