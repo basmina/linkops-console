@@ -116,6 +116,39 @@ describe('FleetComponent', () => {
     expect(compiled.querySelector('.retry-button')).toBeTruthy();
   });
 
+  it('shows a usable message when only the summary call fails', () => {
+    apiMock.getSummary.mockReturnValue(
+      throwError(() => new Error('network down')),
+    );
+
+    fixture.componentInstance.loadFleet();
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.loadError()).toContain('Unable to load');
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.textContent).toContain('Unable to load the fleet');
+    expect(compiled.querySelector('.retry-button')).toBeTruthy();
+  });
+
+  it('shows a usable message when both links and summary calls fail', () => {
+    apiMock.getLinks.mockReturnValue(
+      throwError(() => new Error('network down')),
+    );
+    apiMock.getSummary.mockReturnValue(
+      throwError(() => new Error('network down')),
+    );
+
+    fixture.componentInstance.loadFleet();
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.loadError()).toContain('Unable to load');
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.textContent).toContain('Unable to load the fleet');
+    expect(compiled.querySelector('.retry-button')).toBeTruthy();
+  });
+
   it('retrying a failed load clears the error once it succeeds', () => {
     apiMock.getLinks.mockReturnValueOnce(
       throwError(() => new Error('network down')),

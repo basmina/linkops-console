@@ -15,7 +15,10 @@
     "skipDefaultLibCheck": true,
     "strict": true,
     "paths": {
-      "@linkops-console/link": ["./libs/domain/link/src/index.ts"]
+      "@linkops-console/link": ["./libs/domain/link/src/index.ts"],
+      "@linkops-console/data-access-links": [
+        "./libs/data-access/links/src/index.ts"
+      ]
     }
   },
   "exclude": ["node_modules", "tmp"]

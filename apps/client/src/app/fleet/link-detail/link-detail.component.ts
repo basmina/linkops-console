@@ -37,6 +37,7 @@ export class LinkDetailComponent implements OnInit {
   private readonly api = inject(FleetApiService);
   private readonly stream = inject(FleetStreamService);
   private readonly destroyRef = inject(DestroyRef);
+
   readonly link = signal<Link | null>(null);
   readonly telemetry = signal<TelemetrySample[]>([]);
   readonly latest = signal<TelemetrySample | null>(null);
@@ -48,9 +49,7 @@ export class LinkDetailComponent implements OnInit {
   readonly saved = signal(false);
 
   readonly hasConflict = signal(false);
-
   readonly statusLabel = computed(() => this.link()?.status ?? 'down');
-
   readonly sparklinePoints = computed(() => {
     const samples = this.telemetry().slice(-60);
 
@@ -59,18 +58,14 @@ export class LinkDetailComponent implements OnInit {
     }
 
     const values = samples.map((sample) => sample.throughputMbps);
-
     const max = Math.max(...values, 1);
     const min = Math.min(...values, 0);
     const range = Math.max(max - min, 1);
-
     return values
       .map((value, index) => {
         const x =
           samples.length === 1 ? 0 : (index / (samples.length - 1)) * 400;
-
         const y = 100 - ((value - min) / range) * 90;
-
         return `${x.toFixed(1)},${y.toFixed(1)}`;
       })
       .join(' ');
@@ -78,28 +73,23 @@ export class LinkDetailComponent implements OnInit {
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
-
     if (!id) {
       this.error.set('Link ID is missing.');
       this.loading.set(false);
       return;
     }
-
     this.load(id);
     this.connectStream(id);
   }
 
   save(config: LinkConfig): void {
     const currentLink = this.link();
-
     if (!currentLink) {
       return;
     }
-
     this.saving.set(true);
     this.saveError.set('');
     this.saved.set(false);
-
     this.api
       .updateLink(currentLink.id, { ...config, version: currentLink.version })
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -114,7 +104,6 @@ export class LinkDetailComponent implements OnInit {
               this.saved.set(false);
             });
         },
-
         error: (err: unknown) => {
           this.saving.set(false);
 
@@ -125,7 +114,6 @@ export class LinkDetailComponent implements OnInit {
             );
             return;
           }
-
           this.saveError.set('Unable to save the link. Please try again.');
         },
       });
@@ -161,19 +149,15 @@ export class LinkDetailComponent implements OnInit {
 
   delete(): void {
     const currentLink = this.link();
-
     if (!currentLink) {
       return;
     }
-
     const confirmed = window.confirm(
       `Delete "${currentLink.name}"? This action cannot be undone.`,
     );
-
     if (!confirmed) {
       return;
     }
-
     this.api
       .deleteLink(currentLink.id)
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -190,7 +174,6 @@ export class LinkDetailComponent implements OnInit {
   private load(id: string): void {
     this.loading.set(true);
     this.error.set('');
-
     forkJoin({
       link: this.api.getLink(id),
       telemetry: this.api
@@ -202,14 +185,11 @@ export class LinkDetailComponent implements OnInit {
         next: ({ link, telemetry }) => {
           this.link.set(link);
           this.telemetry.set(telemetry);
-
           this.latest.set(
             telemetry.length > 0 ? telemetry[telemetry.length - 1] : null,
           );
-
           this.loading.set(false);
         },
-
         error: () => {
           this.error.set('Unable to load this link.');
           this.loading.set(false);
@@ -225,25 +205,19 @@ export class LinkDetailComponent implements OnInit {
         next: (event) => {
           if (event.type === 'telemetry') {
             const sample = event.sample.find((item) => item.linkId === id);
-
             if (!sample) {
               return;
             }
-
             this.latest.set(sample);
-
             this.telemetry.update((samples) => [...samples.slice(-59), sample]);
-
             return;
           }
-
           if (event.type === 'status' && event.linkId === id) {
             this.link.update((current) =>
               current ? { ...current, status: event.status } : current,
             );
           }
         },
-
         error: () => {
           // EventSource reconnects automatically.
         },

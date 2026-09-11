@@ -9,10 +9,6 @@ export const MODES: readonly Mode[] = ['PtP', 'PtMP', 'S2S'];
 
 export const CHANNEL_WIDTHS: readonly ChannelWidth[] = [20, 40, 80];
 
-/**
- * Bounds shared by the server DTOs and the client reactive form so the two
- * validation layers cannot drift.
- */
 export const LINK_LIMITS = {
   nameMinLength: 3,
   nameMaxLength: 40,
@@ -22,10 +18,6 @@ export const LINK_LIMITS = {
   txPowerDbmMax: 30,
 } as const;
 
-/**
- * The operator-editable configuration of a link. `Link` is this plus
- * server-owned fields (id, derived status, version, timestamps).
- */
 export interface LinkConfig {
   name: string;
   siteA: string;
