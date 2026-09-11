@@ -14,8 +14,20 @@ Built as the RADWIN Web Architect home assignment.
 - **Storage:** in-memory `Map` behind a repository port — no database, Docker, or message broker
 
 ---
+## 1. What this is
 
-## 1. Prerequisites
+LinkOps Console is an operator console for a fleet of point-to-point radio links.
+
+An operator opens it, sees every link with its live status and throughput, spots the degraded ones, drills into a link to watch its telemetry, and edits link configuration. Telemetry is produced by a simulator inside the API — there is no real hardware and no external service. Everything runs locally, in memory.
+
+Built as the RADWIN Web Architect home assignment.
+
+- **Client:** Angular 22, standalone components, signal-first state, hand-rolled SVG sparkline
+- **API:** NestJS 11, REST + one SSE stream, `class-validator` DTOs, Swagger
+- **Workspace:** Nx 23 monorepo with enforced library boundaries, strict TypeScript
+- **Storage:** in-memory `Map` behind a repository port — no database, Docker, or message broker
+
+## 2. Prerequisites
 
 | Tool    | Version                  | Notes                                                   |
 | ------- | ------------------------ | ------------------------------------------------------- |
@@ -32,7 +44,7 @@ shared-library build step** before the app runs.
 
 ---
 
-## 2. Install
+## 3. Install
 
 ```bash
 git clone https://github.com/basmina/linkops-console.git
@@ -45,7 +57,7 @@ npm install
 
 ---
 
-## 3. Configuration
+## 4. Configuration
 
 The application runs with **zero configuration**. Every variable is optional and
 has a working default; there are no secrets or credentials in this project.
@@ -66,7 +78,7 @@ cp .env.example .env
 
 ---
 
-## 4. Run it
+## 5. Run it
 
 ### One command (API + client together)
 
@@ -108,7 +120,7 @@ npm run start:client   # nx serve client
 
 ---
 
-## 5. Test it
+## 6. Test it
 
 All suites are fast, deterministic, and require no running server.
 
@@ -134,7 +146,7 @@ Full run is ~40 s cold, near-instant warm (Nx caches by project).
 
 ---
 
-## 6. Project structure
+## 7. Project structure
 
 ```text
 apps/
@@ -200,7 +212,7 @@ talks to the API over HTTP/SSE.
 
 ---
 
-## 7. How it works
+## 8. How it works
 
 ```text
  ┌────────────────────────────────────────────────────────────────────────┐
@@ -269,7 +281,7 @@ subjects are released in `onModuleDestroy`, and `main.ts` calls
 
 ---
 
-## 8. API reference
+## 9. API reference
 
 Base path: `/api`. Full interactive docs: **http://localhost:3000/api/docs**.
 
@@ -332,7 +344,7 @@ the meaning:
 
 ---
 
-## 9. Common tasks
+## 10. Common tasks
 
 ### Add a field to `Link`
 
@@ -377,7 +389,7 @@ the meaning:
 
 ---
 
-## 10. Troubleshooting
+## 11. Troubleshooting
 
 | Symptom                                          | Cause / fix                                                                                                                                                            |
 | ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -390,7 +402,7 @@ the meaning:
 
 ---
 
-## 11. Decisions, gaps, and next steps
+## 12. Decisions, gaps, and next steps
 
 ### Decisions I would defend
 
@@ -471,19 +483,4 @@ Two places I overrode the tool:
   otherwise lag the live status dots.
 
 ---
-
-## 12. Submission checklist
-
-- [x] Angular 22 client, NestJS 11 API, one SSE stream
-- [x] In-memory store behind `LinkRepository` port; 10 links seeded on boot
-- [x] Telemetry simulator, 1 Hz, bounded 300-sample ring buffer per link
-- [x] REST CRUD + fleet summary + telemetry history, validated DTOs, one error envelope
-- [x] SSE: batched telemetry, status changes, throttled summary; reconnect via `Last-Event-ID`; teardown on disconnect
-- [x] Fleet view: signal state, sortable/filterable, KPI header, URL-persisted filter/sort
-- [x] Link create + edit: one presentational `LinkFormComponent`, validators mirroring the server, delete confirmation
-- [x] Optimistic concurrency: `version` on every edit, `409` surfaced as a resolvable conflict
-- [x] Tests: domain (status, buffer, generator), repository, HTTP contract, store, form + component
-- [x] Nx monorepo with tagged libraries and lint-enforced boundaries
-- [x] Swagger UI, `.nvmrc`, `.env.example`, one-command start (`npm start`) and test (`npm test`)
-
 GitHub: https://github.com/basmina/linkops-console
