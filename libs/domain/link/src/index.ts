@@ -2,3 +2,8 @@ export * from './lib/link';
 export * from './lib/status';
 export * from './lib/fleet-summary';
 export * from './lib/telemetry';
+export * from './lib/link-repository';
+export * from './lib/link-repository.token';
+export * from './lib/stream-event';
+export * from './lib/ring-buffer';
+export * from './lib/generate-sample';
